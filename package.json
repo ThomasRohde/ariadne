@@ -1,0 +1,42 @@
+{
+  "name": "ariadne",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal Trace Viewer for OpenAI Agents SDK",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @ariadne/api --filter @ariadne/web dev",
+    "dev:api": "pnpm --filter @ariadne/api dev",
+    "dev:web": "pnpm --filter @ariadne/web dev",
+    "start": "pnpm dev",
+    "build": "pnpm --recursive --filter shared --filter api --filter web build",
+    "build:api": "pnpm --filter @ariadne/api build",
+    "build:web": "pnpm --filter @ariadne/web build",
+    "test": "pnpm --recursive test",
+    "test:timeline": "bash ./test-timeline.sh",
+    "typecheck": "pnpm --recursive typecheck",
+    "lint": "pnpm --recursive lint"
+  },
+  "keywords": [
+    "trace",
+    "viewer",
+    "agents",
+    "observability"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
+    "eslint": "^9.37.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "globals": "^16.4.0",
+    "shadcn": "^3.4.0",
+    "typescript-eslint": "^8.46.1"
+  }
+}

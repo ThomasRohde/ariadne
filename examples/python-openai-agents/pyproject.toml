@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ariadne-weather-agent"
+version = "0.1.0"
+description = "Weather agent example instrumented with the Ariadne trace exporter."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+	"openai>=1.0.0",
+	"openai-agents>=0.1.0",
+	"python-dotenv>=1.0.0",
+	"requests>=2.31.0",
+	"httpx>=0.27.0",
+]
+
+[project.scripts]
+ariadne-weather-agent = "weather_agent:cli"
+
+[tool.setuptools]
+py-modules = ["weather_agent", "http_exporter"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = []
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

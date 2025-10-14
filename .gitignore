@@ -1,0 +1,143 @@
+# .gitignore for Ariadne (local-first monorepo)
+# Tailored for: Node (pnpm) + TypeScript + Vite (web) + Hono (api) + Python examples.
+# IMPORTANT: Keep lockfiles (pnpm-lock.yaml, package-lock.json, yarn.lock) committed — do NOT ignore them here.
+
+### Node / pnpm / package managers
+node_modules/
+.pnpm/
+.pnpm-store/
+**/node_modules/
+
+# Package manager & debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+### Build outputs & packaged artifacts
+dist/
+**/dist/
+build/
+**/build/
+out/
+**/out/
+lib/
+**/lib/
+es/
+cjs/
+*.tgz
+
+### TypeScript
+*.tsbuildinfo
+*.tsbuildinfo.*
+
+### Tool caches & bundlers
+.cache/
+.vite/
+.rollup.cache
+.rpt2_cache/
+.parcel-cache/
+.next/
+.storybook/
+
+### Tests & coverage
+coverage/
+**/coverage/
+lcov-report/
+*.lcov
+.nyc_output/
+.vitest/
+test-results.xml
+mochawesome-report/
+
+### Logs & runtime files
+logs/
+*.log
+*.log.*
+pids/
+*.pid
+
+### Environment & secrets (local)
+.env
+.env.*.local
+.env.local
+.local.env
+.envrc
+.env.*.secret
+secrets/
+private/
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+
+### OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+### Editors / IDE
+.vscode/
+!.vscode/extensions.json  # keep recommended extensions if you want to commit them — remove this exception to ignore all VS Code data
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.vscode-test/
+*.iml
+
+### REPL / local histories
+.node_repl_history
+
+### Python (examples)
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.venv/
+venv/
+ENV/
+env/
+.envs/
+*.egg-info/
+.eggs/
+**/dist/
+**/build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.coverage
+coverage.xml
+pip-log.txt
+pip-delete-this-directory.txt
+
+### Miscellaneous
+*.bak
+*.orig
+*.rej
+*.tmp
+tmp/
+temp/
+*.sqlite
+*.sqlite3
+*.db
+
+### Monorepo-wide catch-alls
+**/dist/
+**/build/
+**/out/
+**/.cache/
+
+# If you intentionally want to commit a generated file, remove it from this list or add an explicit
+# exception ("!pattern") above. This file is opinionated; adjust it to taste for your team.
