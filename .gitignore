@@ -22,8 +22,6 @@ build/
 **/build/
 out/
 **/out/
-lib/
-**/lib/
 es/
 cjs/
 *.tgz
