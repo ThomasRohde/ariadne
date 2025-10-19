@@ -1,0 +1,65 @@
+# Compaction Configuration Example
+#
+# This file demonstrates all available configuration options.
+# Copy to config.yaml and customize for your use case.
+
+# Model for summarization (must support function calling)
+model: "gpt-4"
+
+# Maximum context window for the model
+max_context_tokens: 128000
+
+# Compaction policy
+policy:
+  # Trigger compaction when usage exceeds this percentage of max_tokens
+  trigger_pct: 0.85
+
+  # Hard buffer to reserve at end of context window
+  hard_cap_buffer: 1500
+
+  # Number of recent user/assistant turns to preserve
+  keep_recent_turns: 6
+
+  # Number of recent tool call/response pairs to preserve
+  keep_tool_io_pairs: 4
+
+  # Roles that are ALWAYS protected from pruning
+  roles_never_prune:
+    - "system"
+    - "developer"
+
+  # Metadata key to mark messages as protected
+  protected_flag: "protected"
+
+  # Summarization strategy
+  # Options: task_state (default), brief, decision_log, code_delta
+  strategy: "task_state"
+
+# Telemetry and observability
+telemetry_enabled: true
+
+# Optional: Ariadne Trace Viewer integration
+# If set, compaction events exported via HTTP
+ariadne_url: "http://localhost:5175/ingest"
+
+# Storage configuration
+storage_enabled: true
+storage_adapter: "fs"  # filesystem (default)
+storage_path: "./.compact/archive"
+
+# Redaction and security
+redaction_enabled: true
+redaction_patterns:
+  - '(?i)api[_-]?key\s*[:=]\s*\S+'
+  - '(?i)password\s*[:=]\s*\S+'
+  - '(?i)token\s*[:=]\s*\S+'
+  - '(?i)secret\s*[:=]\s*\S+'
+
+# Advanced: Custom summarizer model (cheaper than main model)
+summarizer_model: "gpt-3.5-turbo"
+
+# Advanced: Timeout for summarization in seconds
+summarization_timeout: 10.0
+
+# Advanced: Enable async archival (future)
+# async_storage: true
