@@ -55,3 +55,8 @@ warn_unused_configs = true
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "--cov=compact --cov-report=html --cov-report=term-missing"
+
+[tool.uv.workspace]
+members = [
+    "examples",
+]
