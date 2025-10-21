@@ -183,6 +183,49 @@ const extractSpanResponse = (span: SpanEvent): ExtractedResponse | null => {
   return null
 }
 
+const PRETTY_JSON_INDENT = 2
+
+const formatPrettyJson = (value: unknown): string => {
+  if (value === null || value === undefined) {
+    return ''
+  }
+
+  const replacer = (_key: string, current: unknown) => {
+    if (typeof current === 'bigint') {
+      return current.toString()
+    }
+    if (current instanceof Map) {
+      return Object.fromEntries(current)
+    }
+    if (current instanceof Set) {
+      return Array.from(current)
+    }
+    if (current instanceof Date) {
+      return current.toISOString()
+    }
+    if (current instanceof Error) {
+      return {
+        name: current.name,
+        message: current.message,
+        stack: current.stack
+      }
+    }
+    if (typeof current === 'symbol') {
+      return current.toString()
+    }
+    return current
+  }
+
+  try {
+    return JSON.stringify(value, replacer, PRETTY_JSON_INDENT) ?? ''
+  } catch (error) {
+    console.error('Failed to format JSON payload for display', error)
+    const message =
+      error instanceof Error ? `Unable to render payload: ${error.message}` : 'Unable to render payload'
+    return `/* ${message} */`
+  }
+}
+
 const formatTimestamp = (value?: string) => {
   if (!value) return '—'
   try {
@@ -550,7 +593,6 @@ export default function TraceInspector({
     return extractSpanResponse(span)
   }, [span])
 
-  const dataEntries = span?.data ? Object.entries(span.data) : []
   const spanDuration = span ? computeDuration(span.started_at, span.ended_at) : null
 
   const isResponseTruncated = Boolean(
@@ -561,6 +603,11 @@ export default function TraceInspector({
       ? responseDetails.text
       : `${responseDetails.text.slice(0, RESPONSE_PREVIEW_LIMIT)}…`
     : null
+  const rawEventJson = useMemo(() => (span ? formatPrettyJson(span) : ''), [span])
+  const payloadJson = useMemo(() => (span?.data ? formatPrettyJson(span.data) : ''), [span])
+  const hasRawEventJson = rawEventJson.trim().length > 0
+  const hasPayloadJson = payloadJson.trim().length > 0
+  const hasSpanData = Boolean(span?.data && Object.keys(span.data).length > 0)
 
   if (!selectedItem) {
     return (
@@ -769,15 +816,29 @@ export default function TraceInspector({
                 </div>
               </div>
 
-              {dataEntries.length > 0 && (
+              {hasSpanData && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold">Data</h4>
-                    {dataHidden && spanPrivacyKey && (
-                      <Button variant="outline" size="sm" onClick={() => toggleEventReveal(spanPrivacyKey)}>
-                        Reveal
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {dataHidden && spanPrivacyKey && (
+                        <Button variant="outline" size="sm" onClick={() => toggleEventReveal(spanPrivacyKey)}>
+                          Reveal
+                        </Button>
+                      )}
+                      {!dataHidden && hasPayloadJson && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (!hasPayloadJson) return
+                            void navigator.clipboard.writeText(payloadJson)
+                          }}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   {dataHidden ? (
                     <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
@@ -788,11 +849,13 @@ export default function TraceInspector({
                         </Button>
                       )}
                     </div>
+                  ) : hasPayloadJson ? (
+                    <div className="max-h-[400px] overflow-auto rounded-lg border border-border bg-muted/30 p-4 font-mono text-xs">
+                      <pre className="whitespace-pre-wrap break-words">{payloadJson}</pre>
+                    </div>
                   ) : (
-                    <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-4">
-                      {dataEntries.map(([key, value]) => (
-                        <StructuredValue key={key} label={key} value={value} path={[key]} />
-                      ))}
+                    <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                      No payload data available
                     </div>
                   )}
                 </div>
@@ -811,18 +874,30 @@ export default function TraceInspector({
                     </Button>
                   )}
                 </div>
-              ) : (
+              ) : hasRawEventJson ? (
                 <>
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold">Raw Event</h4>
-                    <Button variant="outline" size="sm" onClick={() => navigator.clipboard.writeText(JSON.stringify(span, null, 2))}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={!hasRawEventJson}
+                      onClick={() => {
+                        if (!hasRawEventJson) return
+                        void navigator.clipboard.writeText(rawEventJson)
+                      }}
+                    >
                       <Copy className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                   <div className="max-h-[600px] overflow-auto rounded-lg border border-border bg-muted/30 p-4 font-mono text-xs">
-                    <pre className="whitespace-pre-wrap break-words">{JSON.stringify(span, null, 2)}</pre>
+                    <pre className="whitespace-pre-wrap break-words">{rawEventJson}</pre>
                   </div>
                 </>
+              ) : (
+                <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+                  No raw event data available
+                </div>
               )}
             </div>
           )}
